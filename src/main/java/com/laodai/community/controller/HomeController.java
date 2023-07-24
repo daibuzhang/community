@@ -5,7 +5,9 @@ import com.laodai.community.entity.DiscussPost;
 import com.laodai.community.entity.Page;
 import com.laodai.community.entity.User;
 import com.laodai.community.service.DiscussPostService;
-import com.laodai.community.service.USerService;
+import com.laodai.community.service.LikeService;
+import com.laodai.community.service.UserService;
+import com.laodai.community.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,12 +20,15 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
     @Autowired
     private DiscussPostService discussPostService;
 
     @Autowired
-    private USerService uSerService;
+    private UserService uSerService;
+
+    @Autowired
+    private LikeService likeService;
 
     @RequestMapping(path = "/index",method = RequestMethod.GET)
     public String getIndexPage(Model model, Page page){
@@ -39,12 +44,21 @@ public class HomeController {
             for(DiscussPost post:list){
                 Map<String,Object> map = new HashMap<>();
                 map.put("post",post);
-                User user = uSerService.findUserByID(post.getUserId());
+                User user = uSerService.findUserById(post.getUserId());
                 map.put("user",user);
+
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST,post.getId());
+                map.put("likeCount",likeCount);
+
                 discussPosts.add(map);
             }
         }
         model.addAttribute("discussPosts",discussPosts);
         return "/index";
+    }
+
+    @RequestMapping(path = "/error", method = RequestMethod.GET)
+    public String getErrorPage(){
+        return "/error/500";
     }
 }

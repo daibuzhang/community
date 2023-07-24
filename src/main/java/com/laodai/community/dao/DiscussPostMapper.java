@@ -16,5 +16,9 @@ public interface DiscussPostMapper {
     //即使一个参数，如果用作判断条件也要使用@Param注解 动态sql if语句
     int selectDiscussPostRows(@Param("userId") int userId);
 
+    int insertDiscussPost(DiscussPost discussPost);
 
+    DiscussPost selectDiscussPostById(int id);
+
+    int updateCommentCount(int id,int commentCount);
 }
